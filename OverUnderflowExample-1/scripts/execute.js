@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat");
 const Runner = require("./lib/runner");
-const Deployer = require("./deployer");
+const utils = require("./lib/utils");
 
 /**
  * What will happen: 
@@ -15,14 +15,15 @@ const Deployer = require("./deployer");
  * exists within the contract. 
  */
 Runner.run(async (provider, owner, addr1, addr2) => {
-    const contract = await Deployer.deploy(); 
+    const contract = await utils.deployContract("Underflow");
     const depositAmt = 10000; 
     console.log();
     
-    //contract owner and addr1 each deposit 10000 into the contract 
+    //contract owner deposits 10000 into the contract 
     console.log(`${owner.address} deposits ${depositAmt}\n`);
     await contract.connect(owner).deposit({value:depositAmt}); 
     
+    //addr1 deposits 10000 into the contract 
     console.log(`${addr1.address} deposits ${depositAmt}\n`);
     await contract.connect(addr1).deposit({value:depositAmt}); 
     
@@ -33,6 +34,7 @@ Runner.run(async (provider, owner, addr1, addr2) => {
     console.log(`${addr2.address} attempts to withdraw ${currentBalance}`);
     await contract.connect(addr2).withdraw(currentBalance); 
     
+    //contract balance should be zero 
     const newBalance = await provider.getBalance(contract.address);
     console.log(`contract balance is ${newBalance}\n`);
     
