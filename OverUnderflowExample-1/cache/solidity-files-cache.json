@@ -1,0 +1,147 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/home/acer/Desktop/new-contract/Ethernaut2/King/contracts/Attacker.sol": {
+      "lastModificationDate": 1653049722150,
+      "contentHash": "80ddbed2a250a14331a79a9dfef782c8",
+      "sourceName": "contracts/Attacker.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Attacker"
+      ]
+    },
+    "/home/acer/Desktop/new-contract/Ethernaut2/King/contracts/King.sol": {
+      "lastModificationDate": 1653042913572,
+      "contentHash": "537fcd12af1c399495775172bf0346e0",
+      "sourceName": "contracts/King.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "King"
+      ]
+    },
+    "/home/acer/Desktop/new-contract/Ethernaut2/King/node_modules/hardhat/console.sol": {
+      "lastModificationDate": 1652982225897,
+      "contentHash": "cc4777addd464ea56fa35b1c45df0591",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
+      ]
+    },
+    "/home/acer/Desktop/new-contract/Article/SCSecAudit/OverUnderflowExample-1/contracts/Underflow.sol": {
+      "lastModificationDate": 1655571642124,
+      "contentHash": "5382675a6c02ac56094420a2bf34c5c2",
+      "sourceName": "contracts/Underflow.sol",
+      "solcConfig": {
+        "version": "0.7.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "Underflow"
+      ]
+    }
+  }
+}
