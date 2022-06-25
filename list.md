@@ -16,9 +16,7 @@ What I will cover:
 - Dynamic calls 
 - Sketchy Rounding
 - Sensitive data 
-- Non-private fields 
 - Self-destruct 
-- Trust issues
 
 #hackernoon list 
 - Overflow/underflow
@@ -55,7 +53,8 @@ What I will cover:
 
 
 ## Call to Outside Contract
-**Issue:** any call to outside unknown contract 
+**Issue:** This is a generalization of the **delegatecall** issue. Whereas delegatecall is a specific type of variety of call to an outside contract, any call to an outside contract could be a potential red flag. The keys here would be the nature of the contract being called, and perhaps even  more importantly, what assumptions are being made about that contract. 
+A call to an external contract could take the form of a low-level call (like _call_, _callcode_, or _delegatecall_) or a high-level call 
 
 **Simple Example:** []() TODO:add link 
 
@@ -190,19 +189,6 @@ This doesn't apply only to contract state, but equally to any data with which th
 **Real-life Examples:** TODO: real-life examples
 
 **Mitigation/Fix:** Don't store non-public data in the contract, and ensure that none will be found in the contract's transactions or events. Sensitive data can be stored off-chain, and verified by hash. 
-
-
-
-## Non-Private Fields 
-**Issue: Non-private Fields** Very simply, data that is not to be edited should be private. While private variables in an EVM smart contract are not 'private' in the sense of being 'secret' (i.e., they can certainly be read), they are not publicly writable. It would be a noob mistake to accidentally publish a contract with an unintentionally public variable, it surely has happened before. An attacker scanning for vulnerabilities may notice this mistake and take advantage. 
-
-**Simple Example:** []() TODO:add link 
-
-**Complex Example:** []() TODO:add link 
-
-**Real-life Examples:** TODO: real-life examples
-
-**Mitigation/Fix:** Just make fields and functions as non-public as possible. Internal is the default 
 
 
 ## SelfDestruct 
