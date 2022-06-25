@@ -54,7 +54,25 @@ What I will cover:
 
 ## Call to Outside Contract
 **Issue:** This is a generalization of the **delegatecall** issue. Whereas delegatecall is a specific type of variety of call to an outside contract, any call to an outside contract could be a potential red flag. The keys here would be the nature of the contract being called, and perhaps even  more importantly, what assumptions are being made about that contract. 
-A call to an external contract could take the form of a low-level call (like _call_, _callcode_, or _delegatecall_) or a high-level call 
+A call to an external contract could take the form of a low-level call (like _call_, _callcode_, or _delegatecall_) or a high-level call (such as casting an address to a specific interface and calling a function). Calling an outside contract, depending on the context, can introduce some dangerous uncertainty. There is a range of insecurity associated with this type of scenario, depending on the details. 
+- High-level call to a known contract whose address is either set in the contstructor, hard-coded, or created by the parent contract. This is the minimum level of risk, because assumptions about the contract can safely be made. 
+- High-level call to a contract whose address is not completely under the developer's control. The number of assumptions that can safely be made is drastically reduced. 
+- Any call to a contract whose address is not known until runtime, for example, calling back to the caller of a method (see example below). This is the most dangerous; essentially no assumptions can safely be made about the contract being called. 
+- In the above case, if the call is a delegatecall, and the parent contract holds any state, then the contract is most likely not safe to release or use. 
+
+```
+//maximum safety
+ISwordfish sw = ISwordfish(0xa36085F69e2889c224210F603D836748e7dC00aa); 
+sw.doTheThing(myState.tokenKey);
+```
+
+```
+//minimum safety
+function veryUnsafe() public {
+   //just throw all caution to the wind and trust with all your heart
+   msg.sender.delegatecall(functionSignature); 
+}
+```
 
 **Simple Example:** []() TODO:add link 
 
@@ -63,7 +81,8 @@ A call to an external contract could take the form of a low-level call (like _ca
 **Real-life Examples:** TODO: real-life examples
 
 **Mitigation/Fix:** 
-
+This is mostly about assumptions and design. If your contract design has you calling unknown addresses, the first question to ask might be "is this necessary?". The answer might well be yes, and that's ok. But if it's a completely unknown address, completely out of the developer's control (e.g. msg.sender), then _no_ assumptions can be made about what that address might be. 
+A natural (but naive) assumption to be made might be that the address is not a contract. This would be an unsafe assumption. Even if your call is just to pay ether to a target address, you may be calling the _receive_ or _fallback_ function of a smart contract. And even if you test an address for contract-ness, the test may fail even if the target _is_ a contract. So exactly 0 assumptions are safe to make here, and the corresponding precautions must be taken. 
 
 ## Sketchy Randomness
 **Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered random enough for a given purpose, i.e. an acceptable 'pseudorandom' value. 
