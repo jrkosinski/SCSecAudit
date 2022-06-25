@@ -94,6 +94,34 @@ What I will cover:
 ## Overflow/Underflow
 **Issue: Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not expected by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
 
+Take the following code, for example: 
+```
+function decrementBalance(uint8 _amount) internal returns (uint8) {
+   uint8 initialAmount = 0; 
+   return (initialAmount - _amount); 
+}
+```
+
+Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a return value of 255; the max value of uint8. In 0.8.0 and later, the call would be reverted. If you actually did want overflow/underflow to occur, then you could modify the code in the following way (in 0.8.0 and later)... 
+```
+function decrementBalance(uint8 _amount) internal returns (uint8) {
+   uint8 initialAmount = 0; 
+   unchecked {
+      return (initialAmount - _amount); 
+   }
+}
+```
+
+The above code in 0.8.0 and later, would behave exactly as the original code in 0.7.x and earlier. In 0.7.x and earlier, if overflow/underflow was _not_ desired, then OpenZeppelin's _SafeMath_ would typically be used, or else an underflow/overflow check would be added manually, for example: 
+ 
+```
+function decrementBalance(uint8 _amount) internal returns (uint8) {
+   uint8 initialAmount = 0; 
+   require(_amount <= initialAmount, "Arithmetic underflow detected; reverting"); 
+   return (initialAmount - _amount); 
+}
+```
+
 **Simple Example:** [OverUnderflowExample](https://github.com/jrkosinski/SCSecAudit/tree/main/OverUnderflowExample-1) 
 
 **Complex Example:** []() TODO:add link 
