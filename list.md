@@ -82,7 +82,13 @@ What I will cover:
 
 
 ## Sketchy Randomness
-**Issue: Sketchy Randomness** Randomness is known to be difficult to achieve in the blockchain. As smart contracts run in a highly deterministic universe (and this is a necessary feature), it is nearly impossible to generate a random value. This problem is well known. 
+**Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered random enough for a given purpose, i.e. an acceptable 'pseudorandom' value. 
+In blockchain, the quest for randomness is quite a bit more difficult, as smart contracts execute in a purposely deterministic environment. Intrinsically, there is no real source of randomness available in a smart contract's execution environment, and the search for a solution could easily be the subject of its own book. 
+Block numbers and block timestamps have been used to generate randomness. These might be ok for trivial, non-critical use cases (e.g. a game or demo in which nothing of value is at stake), but they can be be both predicted and manipulated, and so are not suitable as real randomness. 
+In ETH, block miners have an advantage when it comes to randomness. A hard to solve problem regarding randomness is that miners can easily manipulate the system by throwing out blocks in which the randomly generated value is not favorable to them. Imagine a blackjack game in which the hands dealt to a player are determined by a pseudorandom value. Even if a miner can't directly control the random value generated, the miner can just decline to broadcast blocks until he or she mines a block that deals him or her a favorable hand. 
+
+![Cloudflare generates randomness with lava lamps](https://etherscan.io/address/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a#code) 
+Caption: Cloudflare constantly films lava lamps to generate randomness 
 
 **Simple Example:** []() TODO:add link 
 
@@ -91,6 +97,8 @@ What I will cover:
 **Real-life Examples:** TODO: real-life examples
 
 **Mitigation/Fix:** 
+Need for randomness is a common use case, and perenially problematic one. Chainlink has developed [Chainlink VRF](https://blog.chain.link/chainlink-vrf-on-chain-verifiable-randomness/), "on-chain verifiable randomness". It cleverly 
+//TODO: finish, test, and explain 
 
 
 ## Overflow/Underflow
