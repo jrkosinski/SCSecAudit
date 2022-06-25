@@ -112,6 +112,7 @@ Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a
 
 **Real-life Examples:** 
 - [PoWHC - Proof of Weak Hands Coin](https://medium.com/@ebanisadr/how-800k-evaporated-from-the-powh-coin-ponzi-scheme-overnight-1b025c33b530) 
+- [PoWHC code on etherscan](https://etherscan.io/address/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a#code)
 
 **Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow. For example: 
 ```
