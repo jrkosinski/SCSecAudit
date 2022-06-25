@@ -102,25 +102,7 @@ function decrementBalance(uint8 _amount) internal returns (uint8) {
 }
 ```
 
-Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a return value of 255; the max value of uint8. In 0.8.0 and later, the call would be reverted. If you actually did want overflow/underflow to occur, then you could modify the code in the following way (in 0.8.0 and later)... 
-```
-function decrementBalance(uint8 _amount) internal returns (uint8) {
-   uint8 initialAmount = 0; 
-   unchecked {
-      return (initialAmount - _amount); 
-   }
-}
-```
-
-The above code in 0.8.0 and later, would behave exactly as the original code in 0.7.x and earlier. In 0.7.x and earlier, if overflow/underflow was _not_ desired, then OpenZeppelin's _SafeMath_ would typically be used, or else an underflow/overflow check would be added manually, for example: 
- 
-```
-function decrementBalance(uint8 _amount) internal returns (uint8) {
-   uint8 initialAmount = 0; 
-   require(_amount <= initialAmount, "Arithmetic underflow detected; reverting"); 
-   return (initialAmount - _amount); 
-}
-```
+Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a return value of 255; the max value of uint8. In 0.8.0 and later, the call would be reverted. While it might not always be undesirable, an addition result that is less than the original two operands or a subtraction result that is greater than the original value, might not be what is expected. 
 
 **Simple Example:** [OverUnderflowExample](https://github.com/jrkosinski/SCSecAudit/tree/main/OverUnderflowExample-1) 
 
@@ -129,7 +111,27 @@ function decrementBalance(uint8 _amount) internal returns (uint8) {
 **Real-life Examples:** 
 - [PoWHC - Proof of Weak Hands Coin](https://medium.com/@ebanisadr/how-800k-evaporated-from-the-powh-coin-ponzi-scheme-overnight-1b025c33b530) 
 
-**Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow. Many contracts still exist which were written prior to 0.8 of course, so it's still a valid issue to look for. In 0.8 and later, arithetic operations are checked by default for over/underflow. A transaction will revert by default if overflow/underflow is detected. This behavior can be prevented by using the _unchecked_ block. So if you're auditing a contract written in Solidity 0.8 or later, the _unchecked_ keyword will alert you to the possibility of numerical types wrapping around to min or max values. 
+**Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow. For example: 
+```
+function decrementBalance(uint8 _amount) internal returns (uint8) {
+   uint8 initialAmount = 0; 
+   require(_amount <= initialAmount, "Arithmetic underflow detected; reverting"); 
+   return (initialAmount - _amount); 
+}
+```
+
+Many contracts still exist which were written prior to 0.8 of course, so it's still a valid issue to look for. In 0.8 and later, arithetic operations are checked by default for over/underflow. A transaction will revert by default if overflow/underflow is detected. This behavior can be prevented by using the _unchecked_ block. So if the contract developer actually _did_ want overflow/underflow to occur, he/she could use: 
+```
+function decrementBalance(uint8 _amount) internal returns (uint8) {
+   uint8 initialAmount = 0; 
+   unchecked {
+      return (initialAmount - _amount); 
+   }
+}
+```
+The above code in 0.8.0 and later, would behave exactly as the original code in 0.7.x and earlier.
+
+So if you're auditing a contract written in Solidity 0.8.0 or later, the _unchecked_ keyword will alert you to the possibility of numerical types wrapping around to min or max values. In versions prior to 0.8.0, look for arithmetic performed without the _SafeMath_ library or explicity overflow/underflow checks. Then thouroughly test what will happen if overflow or underflow occurs.
 
 
 ## Reentrancy
