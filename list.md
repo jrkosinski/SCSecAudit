@@ -1,5 +1,4 @@
 # The Moo of Moo
-
 What I won't cover: 
 - social engineering attacks like phishing and such 
 - mining attacks (though randomess section touches upon this) 
@@ -15,7 +14,6 @@ What I will cover:
 - Overflow/underflow
 - Reentrancy
 - Dynamic calls 
-- Fallback methods
 - Sketchy Rounding
 - Sensitive data 
 - Non-private fields 
@@ -64,19 +62,6 @@ What I will cover:
 **Complex Example:** []() TODO:add link 
 
 **Real-life Examples:** TODO: real-life examples
-
-**Mitigation/Fix:** 
-
-
-## Fallback Methods
-**Issue: fallback methods **
-
-**Simple Example:** []() TODO:add link 
-
-**Complex Example:** []() TODO:add link 
-
-**Real-life Examples:**
-- The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
 
 **Mitigation/Fix:** 
 
