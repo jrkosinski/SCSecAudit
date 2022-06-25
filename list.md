@@ -90,7 +90,7 @@ In blockchain, the quest for randomness is quite a bit more difficult, as smart 
 Block numbers and block timestamps have been used to generate randomness. These might be ok for trivial, non-critical use cases (e.g. a game or demo in which nothing of value is at stake), but they can be be both predicted and manipulated, and so are not suitable as real randomness. 
 In ETH, block miners have an advantage when it comes to randomness. A hard to solve problem regarding randomness is that miners can easily manipulate the system by throwing out blocks in which the randomly generated value is not favorable to them. Imagine a blackjack game in which the hands dealt to a player are determined by a pseudorandom value. Even if a miner can't directly control the random value generated, the miner can just decline to broadcast blocks until he or she mines a block that deals him or her a favorable hand. 
 
-![Cloudflare generates randomness with lava lamps](https://etherscan.io/address/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a#code) 
+![Cloudflare generates randomness with lava lamps](cloudflare-lava.png) 
 Caption: Cloudflare constantly films lava lamps to generate randomness 
 
 **Simple Example:** []() TODO:add link 
