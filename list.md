@@ -15,6 +15,7 @@ What I will cover:
 - Overflow/underflow
 - Reentrancy
 - Dynamic calls 
+- Fallback methods
 - Sketchy Rounding
 - Sensitive data 
 - Non-private fields 
@@ -67,6 +68,7 @@ What I will cover:
 **Mitigation/Fix:** 
 
 
+## Fallback Methods
 **Issue: fallback methods **
 
 **Simple Example:** []() TODO:add link 
@@ -92,7 +94,7 @@ What I will cover:
 
 
 ## Overflow/Underflow
-**Issue: Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not expected by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
+**Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not expected by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
 
 Take the following code, for example: 
 ```
