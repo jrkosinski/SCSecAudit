@@ -223,24 +223,18 @@ This doesn't apply only to contract state, but equally to any data with which th
 ## SelfDestruct 
 **Issue: SelfDestruct** The [SELFDESTRUCT](https://docs.soliditylang.org/en/v0.4.21/units-and-global-variables.html?highlight=selfdestruct#contract-related) opcode used to be called _suicide_, and will apparently not be possible in the future with Verkle trees. When invoked within a contract, the SELFDESTRUCT opcode will 'destroy' the contract's state, essentially rendering it unusable, and - here's the kicker - it forwards the entirety of the contract's code to a specified address. The rationale was as sort of a 'nuclear option' or a recourse for a contract found to be vulnerable or buggy. The command could allow the administrator of the contract, for example, a way to move all of the contract's funds to a fixed version of the contract. For such a powerful operation, if you see this opcode invoked within a contract's code, it will be important to ask: who can call the code that calls self-destruct, and under what circumstances? To what address will the funds be forwarded, and can that address be changed? Would it be possible for an attacker to gain access to this code in any way? Aside from that, it raises all sorts of trust issues. Breaking the immutability principle of the contract, can you trust whomever has access to this code, to use it ethically? 
 
-**Simple Example:** []() TODO:add link 
+**Simple Example:** [SelfDestructExample](https://github.com/jrkosinski/SCSecAudit/tree/main/SelfDestructExample) 
 
 **Complex Example:** []() TODO:add link 
 
 **Real-life Examples:** TODO: real-life examples
 
 **Mitigation/Fix:** 
+This is more of a trust issue than a technical issue. The use case that it is presumably trying to address is the case that the contract has become unusable, obsolete, stuck, or compromised, and self-destructing is a last-ditch effort to salvage the contract's funds to presumably move to a new contract. As a trust issue, this is more of an issue for the consumer of the contract than the provider.
+For the developer, the main problem is that if any malicious actor can possibly acquire the right to execute the self-destruct code, they may just have carte blanche to steal all of the contract's funds in one step, without any further difficulty. So the developer should be asking: 
+- is there any possible way that anyone could fraudulently execute the self-destruct code? 
+- is there any safer way to satisfy the use case? For example, an upgradeable pattern? 
+Using an upgradeable pattern (for example UUPS), while presenting no more or less of a trust issue to the consumer, could satisfy the use case of being an "ejector seat" for a troubled contract, with a lesser degree of exposure. So if the answer to the first question was a 'yes' or a 'maybe', then upgradeability could be a potential alternative. 
 
-
-# Trust Issues 
-
-
-**Issue:** Upgradeability. This issue is too big to do more than just scratch the surface here, so I will try to make it as concise as I can. Upgradeability of a contract fundamentally breaks immutability. This is not to say there are not valid use cases for it; there certainly are. There are many different upgradeability patterns, not all of which completely break immutability. But to again use a comparison to a legal contract, would you enter into a contract that had a clause saying "the entire terms and content of this contract may be changed at any time, and you will remain legally bound to the new terms"? 
-
-**Mitigation/Fix:** 
-
-- oracles
-- self-destruct
-- centralization
 
 
