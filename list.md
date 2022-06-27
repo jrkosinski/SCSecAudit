@@ -179,6 +179,8 @@ REENTRANT METHOD: {
 
 **Mitigation/Fix:** OpenZeppelin's ReentrancyGuard offers a robust solution. Essentially what it does is set a state flag on entering the method, and unsets it on exiting the method; so this method can be implemented organically very easily. Alternatively (or in addition), an accepted best practice is to use the _checks-effects-interactions_ pattern, wherein the _check_ (e.g. checking the caller's balance) is done first, followed by the _effects_ (e.g. in this case, debiting the caller's balance), with the _interaction_ (calling the outside contract) performed last. In the simple example case, if the _interaction_ failed, the _effects_ can be reverted so that the state stays consistent with reality. 
 
+NOTE: you can't tell if what you're calling is a smart contract or not (reliably) 
+
 
 ## Dynamic Calls
 **Issue:** methods that accept dynamic calls 
