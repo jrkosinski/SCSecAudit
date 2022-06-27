@@ -7,6 +7,13 @@ What I won't cover:
 What I will cover: 
 - Marvin Margolies
 
+
+## code todo: 
+- finish delegatecall example 
+- Ethernaut CoinFlip 
+- standalone Reentrancy
+- 
+
 ## my list: 
 - DelegateCall
 - Call to outside contract 
@@ -41,9 +48,9 @@ What I will cover:
 ## DelegateCall
 **Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data or logic of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It's been the basis of many known major vulnerabilities. 
 
-**Simple Example:** []() for a very basic demonstration TODO:add link 
+**Simple Example:** [DelegateCallExample](https://github.com/jrkosinski/SCSecAudit/tree/main/DelegateCallExample) 
 
-**Complex Example:** []() for a more complex and realistic demonstration. TODO:add link 
+**Complex Example:** [Ethernaut Preservation](https://github.com/jrkosinski/Ethernaut/tree/main/Preservation) 
 
 **Real-life Examples:** 
 - The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
@@ -76,7 +83,7 @@ function veryUnsafe() public {
 
 **Simple Example:** []() TODO:add link 
 
-**Complex Example:** []() TODO:add link 
+**Complex Example:** [Ethernaut Reentrancy](https://github.com/jrkosinski/Ethernaut/tree/main/Reentrancy) 
 
 **Real-life Examples:** TODO: real-life examples
 
@@ -163,7 +170,7 @@ REENTRANT METHOD: {
 
 **Simple Example:** []() TODO:add link 
 
-**Complex Example:** []() TODO:add link 
+**Complex Example:** [Ethernaut Reentrancy](https://github.com/jrkosinski/Ethernaut/tree/main/Reentrancy)
 
 **Real-life Examples:** 
 - The very well-known [DAO hack](https://thebitcoinnews.com/the-dao-hack-and-blockchain-security-vulnerabilities/) 
@@ -217,7 +224,8 @@ This doesn't apply only to contract state, but equally to any data with which th
 
 **Complex Example:** []() TODO:add link 
 
-**Real-life Examples:** TODO: real-life examples
+**Real-life Examples:**
+- The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
 
 **Mitigation/Fix:** 
 This is more of a trust issue than a technical issue. The use case that it is presumably trying to address is the case that the contract has become unusable, obsolete, stuck, or compromised, and self-destructing is a last-ditch effort to salvage the contract's funds to presumably move to a new contract. As a trust issue, this is more of an issue for the consumer of the contract than the provider.
