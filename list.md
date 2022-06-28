@@ -247,3 +247,4 @@ Using an upgradeable pattern (for example UUPS), while presenting no more or les
 - 3rd party auditing tools (Slither and Mythril) 
 - broader steps in security audit 
 - drill down to just one single type of attack 
+- breakdown of a specfic historical attack 
