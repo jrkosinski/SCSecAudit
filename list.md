@@ -17,7 +17,14 @@ When beginning a security audit, one should not exclude any part of the system f
 - finish delegatecall example 
 - Ethernaut CoinFlip 
 - standalone Reentrancy
-- 
+
+## layers: 
+- initial text for each one 
+- smartified text for each one
+- github examples 
+- the text in github
+- read/research each section and revise 
+- real-life exampels
 
 ## my list: 
 - DelegateCall
@@ -102,11 +109,13 @@ It should definitely be noted that this vulnerability can occur when you think y
 This is mostly about assumptions and design. If your contract design has you calling unknown addresses, the first question to ask might be "is this necessary?". The answer might well be yes, and that's ok. But if it's a completely unknown address, completely out of the developer's control (e.g. msg.sender), then _no_ assumptions can be made about what that address might be. 
 //TODO: finish this 
 
+
 ## Sketchy Randomness
-**Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered random enough for a given purpose, i.e. an acceptable 'pseudorandom' value. 
+**Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered 'random enough' for a given purpose, i.e. an acceptable 'pseudorandom' value. 
 In blockchain, the quest for randomness is quite a bit more difficult, as smart contracts execute in a purposely deterministic environment. Intrinsically, there is no real source of randomness available in a smart contract's execution environment, and the search for a solution could easily be the subject of its own book. 
 Block numbers and block timestamps have been used to generate randomness. These might be ok for trivial, non-critical use cases (e.g. a game or demo in which nothing of value is at stake), but they can be be both predicted and manipulated, and so are not suitable as real randomness. 
 In ETH, block miners have an advantage when it comes to randomness. A hard to solve problem regarding randomness is that miners can easily manipulate the system by throwing out blocks in which the randomly generated value is not favorable to them. Imagine a blackjack game in which the hands dealt to a player are determined by a pseudorandom value. Even if a miner can't directly control the random value generated, the miner can just decline to broadcast blocks until he or she mines a block that deals him or her a favorable hand. 
+//TODO: read an article about this 
 
 ![Cloudflare generates randomness with lava lamps](cloudflare-lava.png) 
 Caption: Cloudflare constantly films lava lamps to generate randomness 
@@ -123,7 +132,7 @@ Need for randomness is a common use case, and perenially problematic one. Chainl
 
 
 ## Overflow/Underflow
-**Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not expected by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
+**Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not anticipated by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
 
 Take the following code, for example: 
 ```
@@ -133,7 +142,9 @@ function decrementBalance(uint8 _amount) internal returns (uint8) {
 }
 ```
 
-Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a return value of 255; the max value of uint8. In 0.8.0 and later, the call would be reverted. While it might not always be undesirable, an addition result that is less than the original two operands or a subtraction result that is greater than the original value, might not be what is expected. 
+Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a return value of 255; the max value of uint8. In 0.8.0 and later, the call would be reverted. While it might not _always_ be undesirable, an addition result that is less than the original two operands or a subtraction result that is greater than the original value, is usually not acceptable or expected. 
+There are numerous ways in which this could be used to gain a foothold. Consider for example that the number in question may be a token balance, and if subtracting 1 from a balance of 0 is possible, then the token balance becomes the max uint256 value. 
+//TODO: think of more examplse
 
 **Simple Example:** [OverUnderflowExample](https://github.com/jrkosinski/SCSecAudit/tree/main/OverUnderflowExample-1) 
 
@@ -143,7 +154,7 @@ Prior to Solidity version 0.8.0, calling `decrementBalance(1)` would result in a
 - [PoWHC - Proof of Weak Hands Coin](https://medium.com/@ebanisadr/how-800k-evaporated-from-the-powh-coin-ponzi-scheme-overnight-1b025c33b530) 
 - [PoWHC code on etherscan](https://etherscan.io/address/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a#code)
 
-**Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow. For example: 
+**Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow, or to create/find a library similar to _SafeMath_. For example: 
 ```
 function decrementBalance(uint8 _amount) internal returns (uint8) {
    uint8 initialAmount = 0; 
@@ -152,7 +163,7 @@ function decrementBalance(uint8 _amount) internal returns (uint8) {
 }
 ```
 
-Many contracts still exist which were written prior to 0.8 of course, so it's still a valid issue to look for. In 0.8 and later, arithetic operations are checked by default for over/underflow. A transaction will revert by default if overflow/underflow is detected. This behavior can be prevented by using the _unchecked_ block. So if the contract developer actually _did_ want overflow/underflow to occur, he/she could use: 
+Many contracts exist which were written prior to 0.8 of course, so it's still a valid issue to look for. In 0.8 and later, arithetic operations are checked by default for over/underflow. A transaction will revert by default if overflow/underflow is detected. This behavior can be prevented by using the _unchecked_ block. So if the contract developer actually _did_ want overflow/underflow to occur, he/she could use: 
 ```
 function decrementBalance(uint8 _amount) internal returns (uint8) {
    uint8 initialAmount = 0; 
@@ -167,7 +178,7 @@ So if you're auditing a contract written in Solidity 0.8.0 or later, the _unchec
 
 
 ## Reentrancy
-**Issue: Reentrancy** The idea of [reentrancy](https://en.wikipedia.org/wiki/Reentrancy_(computing)) in computing is a superset of what we're discussing here in terms of EVM security vulnerabilities. This can be a vulnerability in that can lead to unexpected (by the developer) consequences, which may in some cases be exploitable. This has famously been used in exploits in which a contract method behaves as such (pseudocode): 
+**Issue: Reentrancy** The idea of [reentrancy](https://en.wikipedia.org/wiki/Reentrancy_(computing)) in computing is a superset of what we're discussing here in terms of EVM security vulnerabilities. This can be a vulnerability in that can lead to unexpected (by the developer) consequences, which may in some cases be exploitable. Reentrancy has famously been used in exploits in which a contract method behaves as such (pseudocode): 
 
 ```
 REENTRANT METHOD: {
@@ -176,10 +187,13 @@ REENTRANT METHOD: {
    3. deduct amount from balance 
 }
 ```
+//TODO: create graphic/flowchart
 
 ... wherein the second step indirectly causes the method to be called again. Since the balance has not been debited, the check at step 1 will succeed again. In step 2, the method will be called again, draining the contract of funds. 
 
-**Simple Example:** []() TODO:add link 
+NOTE: this dovetails with "calls to outside contracts", as a call to an outside contract can open up the possibility of reentrancy. 
+
+**Simple Example:** //TODO: code snippet graphic
 
 **Complex Example:** [Ethernaut Reentrancy](https://github.com/jrkosinski/Ethernaut/tree/main/Reentrancy)
 
@@ -188,13 +202,11 @@ REENTRANT METHOD: {
 - The [BurgerSwap attack](https://halborn.com/explained-the-burgerswap-hack-may-2021/) 
 - TODO: others? 
 
-**Mitigation/Fix:** OpenZeppelin's ReentrancyGuard offers a robust solution. Essentially what it does is set a state flag on entering the method, and unsets it on exiting the method; so this method can be implemented organically very easily. Alternatively (or in addition), an accepted best practice is to use the _checks-effects-interactions_ pattern, wherein the _check_ (e.g. checking the caller's balance) is done first, followed by the _effects_ (e.g. in this case, debiting the caller's balance), with the _interaction_ (calling the outside contract) performed last. In the simple example case, if the _interaction_ failed, the _effects_ can be reverted so that the state stays consistent with reality. 
-
-NOTE: you can't tell if what you're calling is a smart contract or not (reliably) 
-NOTE: can happen when you're just sending money (if the target is a smart contract) 
-NOTE: see also 'calls to outside contracts' 
+**Mitigation/Fix:** OpenZeppelin's [ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol) offers a robust solution. Essentially what it does is set a state flag on entering the method, and unsets it on exiting the method; so this method can be implemented organically very easily. It is essentially a type of mutex. One could easily write one's own mutex as well.
+Alternatively (or in addition), an accepted best practice is to use the _checks-effects-interactions_ pattern, wherein the _check_ (e.g. checking the caller's balance) is done first, followed by the _effects_ (e.g. in this case, debiting the caller's balance), with the _interaction_ (calling the outside contract) performed last. In the simple example case, if the _interaction_ failed, the _effects_ can be reverted so that the state stays consistent with reality. 
 
 ## Dynamic Calls
+//TODO: investigate to see if real 
 **Issue:** methods that accept dynamic calls 
 
 **Simple Example:** []() TODO:add link 
