@@ -57,7 +57,14 @@ When beginning a security audit, one should not exclude any part of the system f
 
 
 
-## DelegateCall
+## 1. DelegateCall
+- #initial text 
+- #github examples 
+- #real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
+
 **Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data or logic of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It can open up subtle vulnerabilities that are easy to miss. It's been the basis of many known major attacks. 
 
 **Simple Example:** [DelegateCallExample](https://github.com/jrkosinski/SCSecAudit/tree/main/DelegateCallExample) 
@@ -66,6 +73,7 @@ When beginning a security audit, one should not exclude any part of the system f
 
 **Real-life Examples:** 
 - The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
+- //TODO: another? 
 
 **Mitigation/Fix:** It depends on the situation. Delegatecall is useful, so simply avoiding it is not necessarily desirable. One might say that first step is to _know_ what delegatecall _does_, and how it behaves, particularly in regard to its context-preserving nature. The next step would be to assess the particular situation. If either the caller or the callee, or both, are stateless, you might be safe. Or if the callee (contract B) address is fixed and cannot be changed, and the contract at that address can be audited and reasonably guaranteed to not do anything dangerous, then it likewise might be ok. If the situation is not simple, then one must attempt to consider every possibility or case in which the code could be called or used, and to develop a detailed suite of tests in an attempt to prove that malicious or accidental misuse is not feasible. 
 
@@ -73,7 +81,14 @@ When beginning a security audit, one should not exclude any part of the system f
 
 
 
-## Call to Outside Contract
+## 2. Call to Outside Contract
+- #initial text 
+- +github examples 
+- real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
+
 **Issue:** This is a generalization of the **delegatecall** issue. Whereas delegatecall is a specific type of variety of call to an outside contract, any call to an outside contract could be a potential red flag, _especially_ when the contract address is dynamically determined. The keys here would be the nature of the contract being called, and more importantly, what assumptions are being made about that contract. 
 A call to an external contract could take the form of a low-level call (like _call_, _callcode_, or _delegatecall_) or a high-level call (such as casting an address to a specific interface and calling a function). Calling an outside contract, depending on the context, can introduce some dangerous uncertainty. There is a range of insecurity associated with this type of scenario, depending on the details. 
 - High-level call to a known contract whose address is either set in the contstructor, hard-coded, or created by the parent contract. This is the minimum level of risk, because assumptions about the contract can safely be made. 
@@ -110,7 +125,14 @@ This is mostly about assumptions and design. If your contract design has you cal
 //TODO: finish this 
 
 
-## Sketchy Randomness
+
+## 3. Sketchy Randomness
+- #initial text 
+- +github examples 
+- real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 **Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered 'random enough' for a given purpose, i.e. an acceptable 'pseudorandom' value. 
 In blockchain, the quest for randomness is quite a bit more difficult, as smart contracts execute in a purposely deterministic environment. Intrinsically, there is no real source of randomness available in a smart contract's execution environment, and the search for a solution could easily be the subject of its own book. 
 Block numbers and block timestamps have been used to generate randomness. These might be ok for trivial, non-critical use cases (e.g. a game or demo in which nothing of value is at stake), but they can be be both predicted and manipulated, and so are not suitable as real randomness. 
@@ -131,7 +153,14 @@ Need for randomness is a common use case, and perenially problematic one. Chainl
 //TODO: finish, test, and explain 
 
 
-## Overflow/Underflow
+
+## 4. Overflow/Underflow
+- #initial text 
+- +github examples 
+- #real-life examples
+- the text in github
+- #read/research/revise 
+- smartified text 
 **Overflow/Underflow** Prior to Solidity version 0.8.0, arithmetic operations on intrinsic numeric types would wrap on underflow/overflow. If not anticipated by the developer, this could cause unexpected data values which could in turn lead to an exploitable situation. 
 
 Take the following code, for example: 
@@ -153,6 +182,7 @@ There are numerous ways in which this could be used to gain a foothold. Consider
 **Real-life Examples:** 
 - [PoWHC - Proof of Weak Hands Coin](https://medium.com/@ebanisadr/how-800k-evaporated-from-the-powh-coin-ponzi-scheme-overnight-1b025c33b530) 
 - [PoWHC code on etherscan](https://etherscan.io/address/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a#code)
+- another?
 
 **Mitigation/Fix:** The fix for this prior to Solidity 0.8.0 was to use OpenZeppelin's [SafeMath](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol) library. This is no longer necessary and the library might become deprecated in the future. The fix prior to _that_ was to add code to manually check each arithmetic operation for overflow/underflow, or to create/find a library similar to _SafeMath_. For example: 
 ```
@@ -177,7 +207,14 @@ The above code in 0.8.0 and later, would behave exactly as the original code in 
 So if you're auditing a contract written in Solidity 0.8.0 or later, the _unchecked_ keyword will alert you to the possibility of numerical types wrapping around to min or max values. In versions prior to 0.8.0, look for arithmetic performed without the _SafeMath_ library or explicity overflow/underflow checks. Then thouroughly test what will happen if overflow or underflow occurs.
 
 
-## Reentrancy
+
+## 5. Reentrancy
+- #initial text 
+- +github examples 
+- #real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 **Issue: Reentrancy** The idea of [reentrancy](https://en.wikipedia.org/wiki/Reentrancy_(computing)) in computing is a superset of what we're discussing here in terms of EVM security vulnerabilities. This can be a vulnerability in that can lead to unexpected (by the developer) consequences, which may in some cases be exploitable. Reentrancy has famously been used in exploits in which a contract method behaves as such (pseudocode): 
 
 ```
@@ -205,7 +242,15 @@ NOTE: this dovetails with "calls to outside contracts", as a call to an outside 
 **Mitigation/Fix:** OpenZeppelin's [ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol) offers a robust solution. Essentially what it does is set a state flag on entering the method, and unsets it on exiting the method; so this method can be implemented organically very easily. It is essentially a type of mutex. One could easily write one's own mutex as well.
 Alternatively (or in addition), an accepted best practice is to use the _checks-effects-interactions_ pattern, wherein the _check_ (e.g. checking the caller's balance) is done first, followed by the _effects_ (e.g. in this case, debiting the caller's balance), with the _interaction_ (calling the outside contract) performed last. In the simple example case, if the _interaction_ failed, the _effects_ can be reverted so that the state stays consistent with reality. 
 
-## Dynamic Calls
+
+
+## 6. Dynamic Calls
+- initial text 
+- github examples 
+- real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 //TODO: investigate to see if real 
 **Issue:** methods that accept dynamic calls 
 
@@ -218,7 +263,14 @@ Alternatively (or in addition), an accepted best practice is to use the _checks-
 **Mitigation/Fix:** 
 
 
-## Sketchy Rounding
+
+## 7. Sketchy Rounding
+- initial text 
+- github examples 
+- real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 **Issue: Sketchy Rounding** sketchy rounding 
 
 **Simple Example:** []() TODO:add link 
@@ -230,7 +282,14 @@ Alternatively (or in addition), an accepted best practice is to use the _checks-
 **Mitigation/Fix:** 
 
 
-## Sensitive Data 
+
+## 8. Sensitive Data 
+- #initial text 
+- +github examples 
+- real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 **Issue: Sensitive Data** Contract users and developers alike must be aware and remember that there are no secrets on the blockchain. Any data that should not be publicly read, must _not_ in any case be stored in the blockchain, even as 'private' variables, because that data is still readable. Any data that must be available to the contract but cannot be publicly seen must be stored off-chain, and accessible perhaps by hash only. 
 This doesn't apply only to contract state, but equally to any data with which the contract interacts. Take a hypothetical case in which a contract method requires a specific secret passcode, and wisely the developer of the contract stored only the hash of the required passcode in the contract, as a private variable. An attacker could still scan transactions associated with the contract for calls in which the correct passcode was passed in by a caller; in these, the correct passcode will be stored in the transaction and clearly readable. 
 
@@ -243,7 +302,14 @@ This doesn't apply only to contract state, but equally to any data with which th
 **Mitigation/Fix:** Don't store non-public data in the contract, and ensure that none will be found in the contract's transactions or events. Sensitive data can be stored off-chain, and verified by hash. 
 
 
-## SelfDestruct 
+
+## 9. SelfDestruct 
+- #initial text 
+- #github examples 
+- #real-life examples
+- the text in github
+- read/research/revise 
+- smartified text 
 **Issue: SelfDestruct** The [SELFDESTRUCT](https://docs.soliditylang.org/en/v0.4.21/units-and-global-variables.html?highlight=selfdestruct#contract-related) opcode used to be called _suicide_, and will apparently not be possible in the future with Verkle trees. When invoked within a contract, the SELFDESTRUCT opcode will 'destroy' the contract's state, essentially rendering it unusable, and - here's the kicker - it forwards the entirety of the contract's code to a specified address. The rationale was as sort of a 'nuclear option' or a recourse for a contract found to be vulnerable or buggy. The command could allow the administrator of the contract, for example, a way to move all of the contract's funds to a fixed version of the contract. For such a powerful operation, if you see this opcode invoked within a contract's code, it will be important to ask: who can call the code that calls self-destruct, and under what circumstances? To what address will the funds be forwarded, and can that address be changed? Would it be possible for an attacker to gain access to this code in any way? Aside from that, it raises all sorts of trust issues. Breaking the immutability principle of the contract, can you trust whomever has access to this code, to use it ethically? 
 
 **Simple Example:** [SelfDestructExample](https://github.com/jrkosinski/SCSecAudit/tree/main/SelfDestructExample) 
@@ -251,7 +317,8 @@ This doesn't apply only to contract state, but equally to any data with which th
 **Complex Example:** [Ethernaut Motorbike](https://github.com/jrkosinski/Ethernaut/blob/main/Motorbike/)
 
 **Real-life Examples:**
-- The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
+- The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/)
+- //TODO: others? 
 
 **Mitigation/Fix:** 
 This is more of a trust issue than a technical issue. The use case that it is presumably trying to address is the case that the contract has become unusable, obsolete, stuck, or compromised, and self-destructing is a last-ditch effort to salvage the contract's funds to presumably move to a new contract. As a trust issue, this is more of an issue for the consumer of the contract than the provider.
