@@ -65,7 +65,9 @@ When beginning a security audit, one should not exclude any part of the system f
 - read/research/revise 
 - smartified text 
 
-**Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data or logic of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It can open up subtle vulnerabilities that are easy to miss. It's been the basis of many known major attacks. 
+**Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It can create subtle vulnerabilities that are easy to overlook. It's been the basis of or an important component in major known attacks. 
+
+//TODO: note that callcode is deprecated (is it? ) 
 
 **Simple Example:** [DelegateCallExample](https://github.com/jrkosinski/SCSecAudit/tree/main/DelegateCallExample) 
 
@@ -75,7 +77,10 @@ When beginning a security audit, one should not exclude any part of the system f
 - The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
 - //TODO: another? 
 
-**Mitigation/Fix:** It depends on the situation. Delegatecall is useful, so simply avoiding it is not necessarily desirable. One might say that first step is to _know_ what delegatecall _does_, and how it behaves, particularly in regard to its context-preserving nature. The next step would be to assess the particular situation. If either the caller or the callee, or both, are stateless, you might be safe. Or if the callee (contract B) address is fixed and cannot be changed, and the contract at that address can be audited and reasonably guaranteed to not do anything dangerous, then it likewise might be ok. If the situation is not simple, then one must attempt to consider every possibility or case in which the code could be called or used, and to develop a detailed suite of tests in an attempt to prove that malicious or accidental misuse is not feasible. 
+**Mitigation/Fix:** 
+REWRITE: Delegatecall is useful, and so is not to be simply avoided. The mitigation here is more about _awareness_ of delegatecall's context-preserving behavior, and _foresight_ to anticipate ways in which it can be misused. 
+
+It depends on the situation. Delegatecall is useful, so simply avoiding it is not necessarily desirable. One might say that first step is to _know_ what delegatecall _does_, and how it behaves, particularly in regard to its context-preserving nature. The next step would be to assess the particular situation. If either the caller or the callee, or both, are stateless, you might be safe. Or if the callee (contract B) address is fixed and cannot be changed, and the contract at that address can be audited and reasonably guaranteed to not do anything dangerous, then it likewise might be ok. If the situation is not simple, then one must attempt to consider every possibility or case in which the code could be called or used, and to develop a detailed suite of tests in an attempt to prove that malicious or accidental misuse is not feasible. 
 
 //TODO: library use case (stateless) 
 
