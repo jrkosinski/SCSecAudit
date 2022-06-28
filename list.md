@@ -1,11 +1,16 @@
 # The Moo of Moo
-What I won't cover: 
-- social engineering attacks like phishing and such 
+
+## Intro 
+An effective security audit of a smart contract is a process of many steps: manual scanning, poring over code and documentation, use of automated tools, collaboration, testing, and creativity. Of this process, manually scanning the code is just one of many essential steps. This article is meant to help with the initial scan of the code; there are aspects of contract programming which are slightly more likely to present openings for attack than others, and this list is meant to list just a few (of many) important things that may catch the security auditor's (or hacker's) eye and warrant further examination. 
+
+**What this article won't cover** 
+- social engineering attacks like phishing and such; this article is focused on faults in coding, and so other types of non-coding attacks are not directly addressed (but would be addressed in the broader scope of a security audit)
 - mining attacks (though randomess section touches upon this) 
 - front-running attacks 
+- as this article is EVM and Solidity-centric, it doesn't directly cite examples from other smart contract platforms; but many of the broader concepts can easily be applied to other platforms
 
-What I will cover: 
-- Marvin Margolies
+**Disclaimer** 
+When beginning a security audit, one should not exclude any part of the system from potential scrutiny, in order to not create blind spots. However, certain points may catch one's eye as more deserving of a closer look than others. This article simply provides a few _examples_ of those in the context of Solidity/EVM smart contracts. This list is neither complete nor exhaustive, and simply scanning for these potential faults alone definitely does _not_ constitute a thorough security audit. For more info on contract security audits, check out //TODO: put some good resource(s) here. 
 
 
 ## code todo: 
@@ -180,7 +185,8 @@ REENTRANT METHOD: {
 **Mitigation/Fix:** OpenZeppelin's ReentrancyGuard offers a robust solution. Essentially what it does is set a state flag on entering the method, and unsets it on exiting the method; so this method can be implemented organically very easily. Alternatively (or in addition), an accepted best practice is to use the _checks-effects-interactions_ pattern, wherein the _check_ (e.g. checking the caller's balance) is done first, followed by the _effects_ (e.g. in this case, debiting the caller's balance), with the _interaction_ (calling the outside contract) performed last. In the simple example case, if the _interaction_ failed, the _effects_ can be reverted so that the state stays consistent with reality. 
 
 NOTE: you can't tell if what you're calling is a smart contract or not (reliably) 
-
+NOTE: can happen when you're just sending money (if the target is a smart contract) 
+NOTE: see also 'calls to outside contracts' 
 
 ## Dynamic Calls
 **Issue:** methods that accept dynamic calls 
@@ -224,7 +230,7 @@ This doesn't apply only to contract state, but equally to any data with which th
 
 **Simple Example:** [SelfDestructExample](https://github.com/jrkosinski/SCSecAudit/tree/main/SelfDestructExample) 
 
-**Complex Example:** []() TODO:add link 
+**Complex Example:** [Ethernaut Motorbike](https://github.com/jrkosinski/Ethernaut/blob/main/Motorbike/)
 
 **Real-life Examples:**
 - The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
@@ -237,4 +243,7 @@ For the developer, the main problem is that if any malicious actor can possibly 
 Using an upgradeable pattern (for example UUPS), while presenting no more or less of a trust issue to the consumer, could satisfy the use case of being an "ejector seat" for a troubled contract, with a lesser degree of exposure. So if the answer to the first question was a 'yes' or a 'maybe', then upgradeability could be a potential alternative. 
 
 
-
+# Upcoming Article Ideas
+- 3rd party auditing tools (Slither and Mythril) 
+- broader steps in security audit 
+- drill down to just one single type of attack 
