@@ -51,7 +51,7 @@ When beginning a security audit, one should not exclude any part of the system f
 
 
 ## DelegateCall
-**Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data or logic of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It's been the basis of many known major vulnerabilities. 
+**Issue: DelegateCall** The EVM currently offers three opcodes for calling to another contract: CALL, CALLCODE, and [DELEGATECALL](https://eips.ethereum.org/EIPS/eip-7). The latter is unique in that, as contract A calls into contract B, the logic of contract B is executed on the _state and memory context of contract A_. When misused it can inadvertently expose sensitive data or logic of contract A, to contract B. While _delegatecall_ in itself is not inherently 'insecure' per se, its context-preserving nature can lead to misunderstandings that can in turn lead to vulnerabilities. It can open up subtle vulnerabilities that are easy to miss. It's been the basis of many known major attacks. 
 
 **Simple Example:** [DelegateCallExample](https://github.com/jrkosinski/SCSecAudit/tree/main/DelegateCallExample) 
 
@@ -60,31 +60,37 @@ When beginning a security audit, one should not exclude any part of the system f
 **Real-life Examples:** 
 - The [Parity Hack](https://hackingdistributed.com/2017/07/22/deep-dive-parity-bug/) 
 
-**Mitigation/Fix:** It depends on the situation. One might say that first step is to _know_ what delegatecall _does_, and how it behaves, particularly in regard to its context-preserving nature. The next step would be to assess the particular situation. If the calling contract (contract A) contains no state, it might be safe. Or if the callee (contract B) address is fixed and cannot be changed, and the contract at that address can be guaranteed to not do anything dangerous, then it likewise might be ok. If the situation is not simple, then one must attempt to consider every possibility or case in which the code could be called or used, and to develop a detailed suite of tests in an attempt to prove that malicious or accidental misuse is not feasible. 
+**Mitigation/Fix:** It depends on the situation. Delegatecall is useful, so simply avoiding it is not necessarily desirable. One might say that first step is to _know_ what delegatecall _does_, and how it behaves, particularly in regard to its context-preserving nature. The next step would be to assess the particular situation. If either the caller or the callee, or both, are stateless, you might be safe. Or if the callee (contract B) address is fixed and cannot be changed, and the contract at that address can be audited and reasonably guaranteed to not do anything dangerous, then it likewise might be ok. If the situation is not simple, then one must attempt to consider every possibility or case in which the code could be called or used, and to develop a detailed suite of tests in an attempt to prove that malicious or accidental misuse is not feasible. 
+
+//TODO: library use case (stateless) 
 
 
 
 ## Call to Outside Contract
-**Issue:** This is a generalization of the **delegatecall** issue. Whereas delegatecall is a specific type of variety of call to an outside contract, any call to an outside contract could be a potential red flag. The keys here would be the nature of the contract being called, and perhaps even  more importantly, what assumptions are being made about that contract. 
+**Issue:** This is a generalization of the **delegatecall** issue. Whereas delegatecall is a specific type of variety of call to an outside contract, any call to an outside contract could be a potential red flag, _especially_ when the contract address is dynamically determined. The keys here would be the nature of the contract being called, and more importantly, what assumptions are being made about that contract. 
 A call to an external contract could take the form of a low-level call (like _call_, _callcode_, or _delegatecall_) or a high-level call (such as casting an address to a specific interface and calling a function). Calling an outside contract, depending on the context, can introduce some dangerous uncertainty. There is a range of insecurity associated with this type of scenario, depending on the details. 
 - High-level call to a known contract whose address is either set in the contstructor, hard-coded, or created by the parent contract. This is the minimum level of risk, because assumptions about the contract can safely be made. 
 - High-level call to a contract whose address is not completely under the developer's control. The number of assumptions that can safely be made is drastically reduced. 
 - Any call to a contract whose address is not known until runtime, for example, calling back to the caller of a method (see example below). This is the most dangerous; essentially no assumptions can safely be made about the contract being called. 
-- In the above case, if the call is a delegatecall, and the parent contract holds any state, then the contract is most likely not safe to release or use. 
+- In the above case, if the call is a delegatecall, and the parent contract holds any state, then the contract is most likely not safe to release or use. In that case, you would be essentially inviting unwanted shenanigans. 
 
 ```
-//maximum safety
+//maximum safety, assuming that the called contract has been audited thoroughly
 ISwordfish sw = ISwordfish(0xa36085F69e2889c224210F603D836748e7dC00aa); 
-sw.doTheThing(myState.tokenKey);
+sw.doTheThing();
 ```
 
 ```
 //minimum safety
 function veryUnsafe() public {
-   //just throw all caution to the wind and trust with all your heart
-   msg.sender.delegatecall(functionSignature); 
+   //just throw all caution to the wind and hope no one notices
+   msg.sender.delegatecall(funcSelector); 
 }
 ```
+
+It should definitely be noted that this vulnerability can occur when you think you are just sending ether to an address. The address that you're sending to may be a contract. Sending ether to an unknown (dynamic) address should always be considered as a call to an outside contract. Your _call_ or _send_ or _transfer_ to that address may be invoking a _receive_ or _fallback_ method on said contract. If the address is dynamic, then you won't know (at runtime) what sort of evil shenanigans that contract may invoke. 
+//TODO: verify the above 
+//TODO: can you really not know? 
 
 **Simple Example:** []() TODO:add link 
 
@@ -94,7 +100,7 @@ function veryUnsafe() public {
 
 **Mitigation/Fix:** 
 This is mostly about assumptions and design. If your contract design has you calling unknown addresses, the first question to ask might be "is this necessary?". The answer might well be yes, and that's ok. But if it's a completely unknown address, completely out of the developer's control (e.g. msg.sender), then _no_ assumptions can be made about what that address might be. 
-A natural (but naive) assumption to be made might be that the address is not a contract. This would be an unsafe assumption. Even if your call is just to pay ether to a target address, you may be calling the _receive_ or _fallback_ function of a smart contract. And even if you test an address for contract-ness, the test may fail even if the target _is_ a contract. So exactly 0 assumptions are safe to make here, and the corresponding precautions must be taken. 
+//TODO: finish this 
 
 ## Sketchy Randomness
 **Issue: Sketchy Randomness** Whether or not there exists true randomness in the universe is not a settled matter. In computing, a level of randomness - while not truly random in the scientific sense - can be considered random enough for a given purpose, i.e. an acceptable 'pseudorandom' value. 
